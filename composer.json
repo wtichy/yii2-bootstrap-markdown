@@ -1,0 +1,7 @@
+{
+    "name": "yidashi/yii2-boostrap-markdown",
+    "description": "yii2-boostrap-markdown",
+    "require": {
+        "php": ">=5.4.0"
+    }
+}
