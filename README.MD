@@ -9,5 +9,5 @@ composer require yidashi/yii2-bootstrap-markdown:"*"
 ```
 >或者在activeForm里使用
 ```
-echo $form->field($model,'attributeName')->widget('yidashi\markdown\Markdown',[''language] => 'zh');
+echo $form->field($model,'attributeName')->widget('yidashi\markdown\Markdown',['language' => 'zh']);
 ```
