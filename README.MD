@@ -15,6 +15,8 @@ composer require yidashi/yii2-bootstrap-markdown:"*"
 ```
 语言参数language默认就是zh，可以不提供
 
+如果需要上传图片功能,加`useUploadImage => true`,此功能依赖 `yidashi/yii2-webuploader`,见[https://github.com/yidashi/yii2-webuploader](https://github.com/yidashi/yii2-webuploader)
+
 ## 3.解析
 
 ```

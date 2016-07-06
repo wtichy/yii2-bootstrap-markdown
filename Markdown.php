@@ -5,26 +5,39 @@
  * Time: 17:15
  */
 namespace yidashi\markdown;
+
 use yii;
 use yii\helpers\Html;
+
 class Markdown extends yii\widgets\InputWidget{
-    public $language;
+
+    public $language = 'zh';
+
+    public $useUploadImage = false;
+
     public function init(){
-        $this->options['id']='markdown-textarea';
-        if(!$this->language){
-            $this->language='zh';
-        }
+        $this->options['data-provide']='markdown-textarea';
         parent::init();
     }
     public function run(){
         MarkdownAsset::register($this->view)->js[] = 'js/locale/bootstrap-markdown.' . $this->language . '.js';
-        $this->view->registerJs('
-            var markdown=$("#markdown-textarea").markdown({autofocus:false,language:"' . $this->language . '"});
-        ');
+        $options = [
+            'autofocus' => false,
+            'language' => $this->language,
+            'footer' => "本站编辑器使用了 GFM (GitHub Flavored Markdown) 语法，关于此语法的说明，请 <a href=\"https://help.github.com/articles/github-flavored-markdown\" target=\"_blank\">点击此处</a> 获得更多帮助。"
+        ];
+        $clientOptions = yii\helpers\Json::htmlEncode($options);
+        $js = "$(\"[data-provide=markdown-textarea]\").markdown($clientOptions)";
+        $this->view->registerJs($js);
         if($this->hasModel()){
-            return Html::activeTextarea($this->model,$this->attribute,$this->options);
+            $html = Html::activeTextarea($this->model,$this->attribute,$this->options);
         }else{
-            return Html::textarea($this->name,$this->value,$this->options);
+            $html = Html::textarea($this->name,$this->value,$this->options);
         }
+        if ($this->useUploadImage) {
+            $html .= $this->render('modal');
+            MarkdownAsset::register($this->view)->js[] = 'js/markdown-hook.js';
+        }
+        return $html;
     }
 }
