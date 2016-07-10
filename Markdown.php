@@ -27,7 +27,42 @@ class Markdown extends yii\widgets\InputWidget{
             'footer' => "本站编辑器使用了 GFM (GitHub Flavored Markdown) 语法，关于此语法的说明，请 <a href=\"https://help.github.com/articles/github-flavored-markdown\" target=\"_blank\">点击此处</a> 获得更多帮助。"
         ];
         $clientOptions = yii\helpers\Json::htmlEncode($options);
-        $js = "$(\"[data-provide=markdown-textarea]\").markdown($clientOptions)";
+        if (!$this->useUploadImage) {
+            $js = "$(\"[data-provide=markdown-textarea]\").markdown($clientOptions)";
+        } else {
+            $js = <<<JS
+$("[data-provide=markdown-textarea]").markdown({
+    autofocus:false,
+    language:'{$this->language}',
+    footer:"本站编辑器使用了 GFM (GitHub Flavored Markdown) 语法，关于此语法的说明，请 <a href=\"https://help.github.com/articles/github-flavored-markdown\" target=\"_blank\">点击此处</a> 获得更多帮助。",
+    buttons: [
+        [{
+            name: "groupLink",
+            data: [{
+                name: "cmdImage",
+                callback: function(e) {
+                    $('#imageModal').modal();
+                    var chunk, cursor, selected = e.getSelection(), content = e.getContent(), link;
+                    $('#imageModal .btn-success').on('click', function(){
+                        link = $('#imageModal img').attr('src');
+                        chunk = '图片描述';
+                        var images = '';
+                        if(link !== null && link !== '' && link !== 'http://') {
+                            var sanitizedLink = $('<div>'+link+'</div>').text();
+                            images = '!['+chunk+']('+sanitizedLink+' "'+chunk+'")\\n\\n';
+                        }
+                        e.replaceSelection(images);
+                        cursor = selected.start+2;
+                        e.setSelection(cursor,cursor+chunk.length);
+                        $(this).off('click');
+                    })
+                }
+            }]
+        }]
+    ],
+});
+JS;
+        }
         $this->view->registerJs($js);
         if($this->hasModel()){
             $html = Html::activeTextarea($this->model,$this->attribute,$this->options);
@@ -36,7 +71,6 @@ class Markdown extends yii\widgets\InputWidget{
         }
         if ($this->useUploadImage) {
             $html .= $this->render('modal');
-            MarkdownAsset::register($this->view)->js[] = 'js/markdown-hook.js';
         }
         return $html;
     }
