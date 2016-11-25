@@ -36,9 +36,9 @@ $("[data-provide=markdown-textarea]").markdown({
     language:'{$this->language}',
     footer:"本站编辑器使用了 GFM (GitHub Flavored Markdown) 语法，关于此语法的说明，请 <a href=\"https://help.github.com/articles/github-flavored-markdown\" target=\"_blank\">点击此处</a> 获得更多帮助。",
     buttons: [
-        [{
+        [{},{
             name: "groupLink",
-            data: [{
+            data: [{},{
                 name: "cmdImage",
                 callback: function(e) {
                     $('#imageModal').modal();
@@ -64,6 +64,7 @@ $("[data-provide=markdown-textarea]").markdown({
 JS;
         }
         $this->view->registerJs($js);
+        $html = '';
         if($this->hasModel()){
             $html = Html::activeTextarea($this->model,$this->attribute,$this->options);
         }else{
